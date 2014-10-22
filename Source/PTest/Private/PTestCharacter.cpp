@@ -1,12 +1,12 @@
 // Copyright 1998-2014 Epic Games, Inc. All Rights Reserved.
 
 #include "PTest.h"
-#include "PTCharacter.h"
+#include "PTestCharacter.h"
 
 //////////////////////////////////////////////////////////////////////////
 // PTCharacter
 
-PTCharacter::PTCharacter(const class FPostConstructInitializeProperties& PCIP)
+APTestCharacter::APTestCharacter(const class FPostConstructInitializeProperties& PCIP)
 	: Super(PCIP)
 {
 	// Set size for collision capsule
@@ -45,31 +45,64 @@ PTCharacter::PTCharacter(const class FPostConstructInitializeProperties& PCIP)
 //////////////////////////////////////////////////////////////////////////
 // Input
 
-void PTCharacter::SetupPlayerInputComponent(class UInputComponent* InputComponent)
+void APTestCharacter::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {
 	// Set up gameplay key bindings
 	check(InputComponent);
 	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
-	InputComponent->BindAxis("MoveForward", this, &PTCharacter::MoveForward);
-	InputComponent->BindAxis("MoveRight", this, &PTCharacter::MoveRight);
+	InputComponent->BindAction("Fire", IE_Pressed, this, &APTestCharacter::FirePress);
+	InputComponent->BindAction("Fire", IE_Released, this, &APTestCharacter::FireRelease);
+
+	InputComponent->BindAction("Aim", IE_Pressed, this, &APTestCharacter::AimPress);
+	InputComponent->BindAction("Aim", IE_Released, this, &APTestCharacter::AimRelease);
+
+	InputComponent->BindAxis("MoveForward", this, &APTestCharacter::MoveForward);
+	InputComponent->BindAxis("MoveRight", this, &APTestCharacter::MoveRight);
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
 	InputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	InputComponent->BindAxis("TurnRate", this, &PTCharacter::TurnAtRate);
+	InputComponent->BindAxis("TurnRate", this, &APTestCharacter::TurnAtRate);
 	InputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-	InputComponent->BindAxis("LookUpRate", this, &PTCharacter::LookUpAtRate);
+	InputComponent->BindAxis("LookUpRate", this, &APTestCharacter::LookUpAtRate);
+
 
 	// handle touch devices
-	InputComponent->BindTouch(IE_Pressed, this, &PTCharacter::TouchStarted);
-	InputComponent->BindTouch(IE_Released, this, &PTCharacter::TouchStopped);
+	InputComponent->BindTouch(IE_Pressed, this, &APTestCharacter::TouchStarted);
+	InputComponent->BindTouch(IE_Released, this, &APTestCharacter::TouchStopped);
 }
 
 
-void PTCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
+void APTestCharacter::Tick(float deltaTime)
+{
+
+}
+
+void APTestCharacter::AimPress()
+{
+	IsIronsight = true;
+	CharacterMovement->bOrientRotationToMovement = false;
+}
+
+void APTestCharacter::AimRelease()
+{
+	IsIronsight = false;
+	CharacterMovement->bOrientRotationToMovement = true;
+}
+
+void APTestCharacter::FirePress()
+{
+
+}
+void APTestCharacter::FireRelease()
+{
+
+}
+
+void APTestCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
 {
 	// jump, but only on the first touch
 	if (FingerIndex == ETouchIndex::Touch1)
@@ -78,7 +111,7 @@ void PTCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
 	}
 }
 
-void PTCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
+void APTestCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
 {
 	if (FingerIndex == ETouchIndex::Touch1)
 	{
@@ -86,19 +119,19 @@ void PTCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
 	}
 }
 
-void PTCharacter::TurnAtRate(float Rate)
+void APTestCharacter::TurnAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
-void PTCharacter::LookUpAtRate(float Rate)
+void APTestCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
-void PTCharacter::MoveForward(float Value)
+void APTestCharacter::MoveForward(float Value)
 {
 	if ((Controller != NULL) && (Value != 0.0f))
 	{
@@ -112,7 +145,7 @@ void PTCharacter::MoveForward(float Value)
 	}
 }
 
-void PTCharacter::MoveRight(float Value)
+void APTestCharacter::MoveRight(float Value)
 {
 	if ( (Controller != NULL) && (Value != 0.0f) )
 	{

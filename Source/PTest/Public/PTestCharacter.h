@@ -4,7 +4,7 @@
 #include "PTestCharacter.generated.h"
 
 UCLASS(config=Game)
-class PTCharacter : public ACharacter
+class APTestCharacter : public ACharacter
 {
 	GENERATED_UCLASS_BODY()
 
@@ -24,7 +24,19 @@ class PTCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
+
+	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Control)
+	bool IsIronsight;
+
+
 protected:
+
+	void FirePress();
+	void FireRelease();
+
+	void AimPress();
+	void AimRelease();
 
 	/** Called for forwards/backward input */
 	void MoveForward(float Value);
@@ -54,5 +66,7 @@ protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 	// End of APawn interface
+
+	virtual void Tick(float deltaTime) override;
 };
 
