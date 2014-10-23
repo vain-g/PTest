@@ -64,59 +64,55 @@ void APTestCharacter::SetupPlayerInputComponent(class UInputComponent* InputComp
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-	InputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+	InputComponent->BindAxis("Turn", this, &APTestCharacter::TurnAxis);
 	InputComponent->BindAxis("TurnRate", this, &APTestCharacter::TurnAtRate);
-	InputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+
+	InputComponent->BindAxis("LookUp", this, &APTestCharacter::LookUpAxis);
 	InputComponent->BindAxis("LookUpRate", this, &APTestCharacter::LookUpAtRate);
 
-
-	// handle touch devices
-	InputComponent->BindTouch(IE_Pressed, this, &APTestCharacter::TouchStarted);
-	InputComponent->BindTouch(IE_Released, this, &APTestCharacter::TouchStopped);
 }
 
 
 void APTestCharacter::Tick(float deltaTime)
 {
-
+	if (GEngine)
+	{
+		//CalculareDirec
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("HELLO WORLD"));
+	}
 }
+
+
 
 void APTestCharacter::AimPress()
 {
 	IsIronsight = true;
 	CharacterMovement->bOrientRotationToMovement = false;
+	bUseControllerRotationYaw = true;
 }
 
 void APTestCharacter::AimRelease()
 {
 	IsIronsight = false;
 	CharacterMovement->bOrientRotationToMovement = true;
+	bUseControllerRotationYaw = false;
 }
+
 
 void APTestCharacter::FirePress()
 {
 
 }
+
 void APTestCharacter::FireRelease()
 {
 
 }
 
-void APTestCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
-{
-	// jump, but only on the first touch
-	if (FingerIndex == ETouchIndex::Touch1)
-	{
-		Jump();
-	}
-}
 
-void APTestCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
+void APTestCharacter::TurnAxis(float Rate)
 {
-	if (FingerIndex == ETouchIndex::Touch1)
-	{
-		StopJumping();
-	}
+	APawn::AddControllerYawInput(Rate);
 }
 
 void APTestCharacter::TurnAtRate(float Rate)
@@ -125,11 +121,18 @@ void APTestCharacter::TurnAtRate(float Rate)
 	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
+
+void APTestCharacter::LookUpAxis(float Rate)
+{
+	APawn::AddControllerPitchInput(Rate);
+}
+
 void APTestCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
+
 
 void APTestCharacter::MoveForward(float Value)
 {
