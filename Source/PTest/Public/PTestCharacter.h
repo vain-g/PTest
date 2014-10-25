@@ -26,9 +26,21 @@ class APTestCharacter : public ACharacter
 	float BaseLookUpRate;
 
 
-	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Control)
-	bool IsIronsight;
+		float WalkSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Control)
+		float RunSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Control)
+		bool CanRun;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Control)
+		bool IsIronsight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Control)
+		bool IsCrouch;
+
 
 
 protected:
@@ -39,10 +51,16 @@ protected:
 	void AimPress();
 	void AimRelease();
 
-	/** Called for forwards/backward input */
+	void RunPress();
+	void RunRelease();
+
+	void CrouchPress();
+	void CroouchRelease();
+
+
+
 	void MoveForward(float Value);
 
-	/** Called for side to side input */
 	void MoveRight(float Value);
 
 	/** 
@@ -58,12 +76,6 @@ protected:
 	 */
 	void LookUpAxis(float Rate);
 	void LookUpAtRate(float Rate);
-
-	/** Handler for when a touch input begins. */
-	void TouchStarted(ETouchIndex::Type FingerIndex, FVector Location);
-
-	/** Handler for when a touch input stops. */
-	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
 protected:
 	// APawn interface

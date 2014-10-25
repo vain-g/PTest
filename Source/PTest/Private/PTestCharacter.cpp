@@ -40,6 +40,10 @@ APTestCharacter::APTestCharacter(const class FPostConstructInitializeProperties&
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+
+	WalkSpeed = 300;
+	RunSpeed = 750;
+	CanRun = true;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -58,6 +62,12 @@ void APTestCharacter::SetupPlayerInputComponent(class UInputComponent* InputComp
 	InputComponent->BindAction("Aim", IE_Pressed, this, &APTestCharacter::AimPress);
 	InputComponent->BindAction("Aim", IE_Released, this, &APTestCharacter::AimRelease);
 
+	InputComponent->BindAction("Run", IE_Pressed, this, &APTestCharacter::RunPress);
+	InputComponent->BindAction("Run", IE_Released, this, &APTestCharacter::RunRelease);
+
+	InputComponent->BindAction("Crouch", IE_Pressed, this, &APTestCharacter::CrouchPress);
+	InputComponent->BindAction("Crouch", IE_Released, this, &APTestCharacter::CroouchRelease);
+
 	InputComponent->BindAxis("MoveForward", this, &APTestCharacter::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &APTestCharacter::MoveRight);
 
@@ -75,11 +85,7 @@ void APTestCharacter::SetupPlayerInputComponent(class UInputComponent* InputComp
 
 void APTestCharacter::Tick(float deltaTime)
 {
-	if (GEngine)
-	{
-		//CalculareDirec
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("HELLO WORLD"));
-	}
+
 }
 
 
@@ -89,6 +95,7 @@ void APTestCharacter::AimPress()
 	IsIronsight = true;
 	CharacterMovement->bOrientRotationToMovement = false;
 	bUseControllerRotationYaw = true;
+	CanRun = false;
 }
 
 void APTestCharacter::AimRelease()
@@ -96,6 +103,7 @@ void APTestCharacter::AimRelease()
 	IsIronsight = false;
 	CharacterMovement->bOrientRotationToMovement = true;
 	bUseControllerRotationYaw = false;
+	CanRun = true;
 }
 
 
@@ -108,6 +116,31 @@ void APTestCharacter::FireRelease()
 {
 
 }
+
+
+void APTestCharacter::RunPress()
+{
+	if (CanRun)
+	{
+		CharacterMovement->MaxWalkSpeed = RunSpeed;
+	}
+}
+
+void APTestCharacter::RunRelease()
+{
+	CharacterMovement->MaxWalkSpeed = WalkSpeed;
+}
+
+void APTestCharacter::CrouchPress()
+{
+	//CharacterMovement->crou
+}
+
+void APTestCharacter::CroouchRelease()
+{
+
+}
+
 
 
 void APTestCharacter::TurnAxis(float Rate)
